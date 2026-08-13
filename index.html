@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto thay Offset tự động - Jerry Mod</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --bg-color: #060b13;
+            --container-bg: rgba(15, 23, 42, 0.85); 
+            --accent-cyan: #22d3ee; 
+            --accent-green: #00e676;
+            --accent-yellow: #fbbf24; 
+            --accent-magenta: #e879f9;
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --border-color: rgba(34, 211, 238, 0.3);
+            --input-bg: rgba(5, 10, 20, 0.95);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: linear-gradient(rgba(6, 11, 19, 0.92), rgba(6, 11, 19, 0.92)), 
+                              url('https://images.squarespace-cdn.com/content/v1/53852033e4b0593452243d63/1603913076131-01LSOMK6M55O937A08NW/jerry_mouse.png'); 
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: block; 
+            background-color: var(--container-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 1200px;
+            border-radius: 16px;
+            box-shadow: 0 0 35px rgba(34, 211, 238, 0.3);
+            border: 1px solid rgba(34, 211, 238, 0.25);
+            overflow: hidden;
+        }
+
+        .banner {
+            text-align: center;
+            padding: 24px;
+            background: rgba(5, 10, 20, 0.7);
+            border-bottom: 3px solid var(--accent-cyan);
+        }
+
+        .banner h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));
+        }
+
+        .banner .subtitle {
+            color: var(--accent-green);
+            font-weight: bold;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .banner .intro-service {
+            color: var(--accent-yellow);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .banner .contact {
+            color: var(--accent-magenta);
+            font-size: 13px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 20px;
+            padding: 25px;
+        }
+
+        @media (max-width: 850px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section-title {
+            font-size: 14px;
+            color: var(--accent-cyan);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            border-left: 4px solid var(--accent-cyan);
+            padding-left: 8px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .drop-zone {
+            width: 100%;
+            height: 120px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px dashed var(--accent-cyan);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            background: rgba(34, 211, 238, 0.15);
+            border-color: var(--accent-green);
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+        }
+
+        .drop-zone-text {
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .drop-zone-subtext {
+            font-size: 12px;
+            color: var(--accent-yellow);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-info {
+            font-size: 13px;
+            color: var(--accent-green);
+            margin-top: 8px;
+            font-weight: bold;
+            word-break: break-all;
+        }
+
+        .pairs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .pair-block {
+            background: rgba(5, 10, 20, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .pair-title {
+            font-size: 12px;
+            color: var(--accent-magenta);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pair-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 480px) {
+            .pair-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 12px;
+            margin-bottom: 6px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        label.find-label { color: #ffb300; }
+        label.replace-label { color: #00e676; }
+
+        textarea {
+            width: 100%;
+            height: 70px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            resize: none;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.3);
+        }
+
+        .log-box {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            height: 520px;
+            overflow-y: auto;
+            color: #f1f5f9;
+        }
+
+        .btn-group {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 15px;
+            padding: 0 25px 25px 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }
+
+        .btn-calc { background-color: #0284c7; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3); border: 1px solid var(--accent-cyan); }
+        .btn-calc:hover { background-color: #0369a1; transform: translateY(-1px); }
+
+        .btn-download { background-color: #059669; box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3); }
+        .btn-download:hover { background-color: #047857; transform: translateY(-1px); }
+        .btn-download:disabled { background-color: #334155; cursor: not-allowed; opacity: 0.3; transform: none; box-shadow: none; border: none; }
+
+        .btn-clear { background-color: #475569; max-width: 130px; }
+        .btn-clear:hover { background-color: #334155; }
+    </style>
+</head>
+<body>
+
+<!-- CONTAINER CHÍNH CỦA TOOL -->
+<div class="container" id="mainToolContainer">
+    <div class="banner">
+        <h1>Auto thay offset tự động</h1>
+        <div class="subtitle">⚙ Tool Offset tự động - Jerry Mod</div>
+        <div class="intro-service">🚀 Jerry Mod chuyên các tool make file và dạy làm file</div>
+        <div class="contact">✉ Telegram: @jerry19_05    |    Zalo : 0559376085</div>
+    </div>
+
+    <div class="content">
+        <div>
+            <div class="section-title">📁 [1] Nạp Tệp Tin Gốc (Mọi Định Dạng)</div>
+            <div class="drop-zone" id="dropZone">
+                <span class="drop-zone-text">Kéo thả tệp tin vào đây hoặc click để mở chọn</span>
+                <span class="drop-zone-subtext">(File cần Thay,...)</span>
+                <div class="file-info" id="fileInfo">Chưa có tệp tin nào được chọn</div>
+                <input type="file" id="fileInput">
+            </div>
+
+            <div class="section-title">📥 [2] Cấu Hình Offset Hệ Thống</div>
+            <div class="pairs-container">
+                <div class="pair-block">
+                    <div class="pair-title">🧩 Cặp Số 1</div>
+                    <div class="pair-inputs">
+                        <div class="input-group">
+                            <label class="find-label"><i class="fas fa-magnifying-glass"></i> Ô 1: Gốc (Anchor Tìm Kiếm)</label>
+                            <textarea id="hex_tim1" placeholder="Nhập chuỗi hex gốc cần tìm..." oninput="saveToLocalStorage()"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label class="replace-label"><i class="fas fa-pen-to-square"></i> Ô 2: Thay Thế (Hex Mới)</label>
+                            <textarea id="hex_thay1" placeholder="Nhập chuỗi hex mới để ghi đè..." oninput="saveToLocalStorage()"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pair-block">
+                    <div class="pair-title">🧩 Cặp Số 2</div>
+                    <div class="pair-inputs">
+                        <div class="input-group">
+                            <label class="find-label"><i class="fas fa-magnifying-glass"></i> Ô 3: Gốc (Anchor Tìm Kiếm)</label>
+                            <textarea id="hex_tim2" placeholder="Nhập chuỗi hex gốc cần tìm..." oninput="saveToLocalStorage()"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label class="replace-label"><i class="fas fa-pen-to-square"></i> Ô 4: Thay Thế (Hex Mới)</label>
+                            <textarea id="hex_thay2" placeholder="Nhập chuỗi hex mới để ghi đè..." oninput="saveToLocalStorage()"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pair-block">
+                    <div class="pair-title">🧩 Cặp Patch Số 3</div>
+                    <div class="pair-inputs">
+                        <div class="input-group">
+                            <label class="find-label"><i class="fas fa-magnifying-glass"></i> Ô 5: Gốc (Anchor Tìm Kiếm)</label>
+                            <textarea id="hex_tim3" placeholder="Nhập chuỗi hex gốc cần tìm..." oninput="saveToLocalStorage()"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label class="replace-label"><i class="fas fa-pen-to-square"></i> Ô 6: Thay Thế (Hex Mới)</label>
+                            <textarea id="hex_thay3" placeholder="Nhập chuỗi hex mới để ghi đè..." oninput="saveToLocalStorage()"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; justify-content: flex-start;">
+            <div class="section-title">🖥 [3] Nhật Ký Quá Trình Thay Thế</div>
+            <div id="systemLogBox" class="log-box">Hệ thống sẵn sàng.</div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-clear" onclick="clearAllData()">Xóa hết</button>
+        <button class="btn-calc" onclick="executeHexPatch()">🚀 Thực Thi Patch File</button>
+        <button class="btn-download" id="downloadFileBtn" onclick="downloadPatchedFile()" disabled>💾 Tải File Đã Sửa Đổi</button>
+    </div>
+</div>
+
+<script>
+    let selectedFileBuffer = null;
+    let selectedFileName = "";
+    let patchedFileBuffer = null;
+
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+
+    // Tự động khôi phục dữ liệu từ localStorage khi tải trang
+    window.addEventListener('DOMContentLoaded', () => {
+        for (let i = 1; i <= 3; i++) {
+            let savedTim = localStorage.getItem(`hex_tim${i}`);
+            let savedThay = localStorage.getItem(`hex_thay${i}`);
+            if (savedTim !== null) document.getElementById(`hex_tim${i}`).value = savedTim;
+            if (savedThay !== null) document.getElementById(`hex_thay${i}`).value = savedThay;
+        }
+    });
+
+    // Hàm lưu giá trị vào localStorage khi người dùng nhập liệu
+    function saveToLocalStorage() {
+        for (let i = 1; i <= 3; i++) {
+            let valTim = document.getElementById(`hex_tim${i}`).value;
+            let valThay = document.getElementById(`hex_thay${i}`).value;
+            localStorage.setItem(`hex_tim${i}`, valTim);
+            localStorage.setItem(`hex_thay${i}`, valThay);
+        }
+    }
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    function handleFiles(files) {
+        if (files.length === 0) return;
+        const file = files[0];
+        selectedFileName = file.name;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            selectedFileBuffer = e.target.result;
+            fileInfo.innerText = `✔ Đã nhận file: ${file.name} (${file.size.toLocaleString()} bytes)`;
+            printLog(`[ ✔ ] Đã nạp thành công file: ${file.name} (${file.size} bytes vào bộ nhớ tạm).
+Hãy nhập các chuỗi Hex và nhấn Thực Thi Patch File.`);
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    function printLog(text) {
+        document.getElementById('systemLogBox').innerText = text;
+    }
+
+    function cleanHex(hexStr) {
+        return hexStr.trim().replace(/0x/gi, '').replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
+    }
+
+    function hexToBytes(hex) {
+        let bytes = [];
+        for (let c = 0; c < hex.length; c += 2) {
+            bytes.push(parseInt(hex.substr(c, 2), 16));
+        }
+        return new Uint8Array(bytes);
+    }
+
+    function bytesToHexSummary(uint8Arr, maxBytes = 16) {
+        let arr = Array.from(uint8Arr.slice(0, maxBytes)).map(b => b.toString(16).toUpperCase().padStart(2, '0'));
+        if (uint8Arr.length > maxBytes) {
+            return arr.join(' ') + " ... " + Array.from(uint8Arr.slice(-4)).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+        }
+        return arr.join(' ');
+    }
+
+    function findAllOffsets(fileBytes, patternBytes) {
+        let offsets = [];
+        if (patternBytes.length === 0) return offsets;
+        
+        for (let i = 0; i <= fileBytes.length - patternBytes.length; i++) {
+            let match = true;
+            for (let j = 0; j < patternBytes.length; j++) {
+                if (fileBytes[i + j] !== patternBytes[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                offsets.push(i);
+            }
+        }
+        return offsets;
+    }
+
+    function executeHexPatch() {
+        if (!selectedFileBuffer) {
+            alert("Vui lòng nạp tệp tin gốc (.bin, .pak,...) trước!");
+            return;
+        }
+
+        let fileBytes = new Uint8Array(selectedFileBuffer.slice(0));
+        let logOutput = `╔════════════════════════════════════════════════════════════╗\n` +
+                        `║                  🧬 Offset Tu Dong - Jerry                 ║\n` +
+                        `║                  ⚙ Tool By: Jerry Mod                      ║\n` +
+                        `║                  🧪 Capsule Batch To Hex                   ║\n` +
+                        `╚════════════════════════════════════════════════════════════╝\n\n` +
+                        `[1] 📂 Tệp nguồn: ${selectedFileName}\n` +
+                        `[2] 📡 Đang chuẩn bị quét cặp Hex...\n` +
+                        `────────────────────────────────────────────────────────\n`;
+
+        let totalFound = 0;
+        let totalReplaced = 0;
+        let hasActivePair = false;
+
+        for (let i = 1; i <= 3; i++) {
+            let rawFind = document.getElementById(`hex_tim${i}`).value;
+            let rawReplace = document.getElementById(`hex_thay${i}`).value;
+
+            if (!rawFind.trim() && !rawReplace.trim()) continue;
+            hasActivePair = true;
+
+            let findHex = cleanHex(rawFind);
+            let replaceHex = cleanHex(rawReplace);
+
+            if (findHex.length % 2 !== 0 || replaceHex.length % 2 !== 0) {
+                logOutput += `❌ Cặp ${i}: Lỗi định dạng mã Hex (Số ký tự phải chẵn)!\n`;
+                printLog(logOutput);
+                return;
+            }
+
+            if (!findHex || !replaceHex) {
+                logOutput += `❌ Cặp ${i}: Không được để trống mã Tìm kiếm hoặc Thay thế!\n`;
+                printLog(logOutput);
+                return;
+            }
+
+            let findBytes = hexToBytes(findHex);
+            let replaceBytes = hexToBytes(replaceHex);
+
+            logOutput += `🧩 Cặp Patch Số ${i}:\n`;
+            logOutput += `   🔍 Anchor (Tìm - Ô ${i*2-1}): ${bytesToHexSummary(findBytes)} (${findBytes.length} bytes)\n`;
+            logOutput += `   ✏️ Ghi đè bằng (Thay - Ô ${i*2}): ${bytesToHexSummary(replaceBytes)} (${replaceBytes.length} bytes)\n`;
+
+            let offsets = findAllOffsets(fileBytes, findBytes);
+            logOutput += `   ✅ Tìm thấy anchor: ${offsets.length}\n`;
+
+            let replaced = 0;
+            let skipped = 0;
+            let listPositions = [];
+
+            for (let pos of offsets) {
+                if (pos + replaceBytes.length > fileBytes.length) {
+                    skipped++;
+                    continue;
+                }
+                fileBytes.set(replaceBytes, pos);
+                replaced++;
+                if (listPositions.length < 5) {
+                    listPositions.push(`0x` + pos.toString(16).toUpperCase());
+                }
+            }
+
+            totalFound += offsets.length;
+            totalReplaced += replaced;
+
+            logOutput += `   ✅ Đã ghi đè: ${replaced}\n`;
+            logOutput += `   ⚠️ Bỏ qua: ${skipped}\n`;
+            if (listPositions.length > 0) {
+                logOutput += `   📍 Vị trí Offset: ${listPositions.join(', ')}${replaced > 5 ? '...' : ''}\n`;
+            }
+            logOutput += `────────────────────────────────────────────────────────\n`;
+        }
+
+        if (!hasActivePair) {
+            alert("Vui lòng nhập dữ liệu Hex vào các ô tìm và thay thế!");
+            return;
+        }
+
+        patchedFileBuffer = fileBytes.buffer;
+
+        logOutput += `\n📊 KẾT QUẢ TỔNG HỢP:\n`;
+        logOutput += `   ■ Tổng tìm thấy anchor: ${totalFound}\n`;
+        logOutput += `   ■ Tổng số vị trí đã đè: ${totalReplaced}\n`;
+        logOutput += `   📏 Kích thước file gốc: ${selectedFileBuffer.byteLength.toLocaleString()} bytes\n`;
+        logOutput += `   📏 Kích thước file output: ${patchedFileBuffer.byteLength.toLocaleString()} bytes\n`;
+        logOutput += `🔒 Đảm bảo: File giữ nguyên dung lượng gốc (Ghi đè chuẩn cấu trúc binary).\n`;
+
+        printLog(logOutput);
+        document.getElementById('downloadFileBtn').disabled = false;
+    }
+
+    function downloadPatchedFile() {
+        if (!patchedFileBuffer) return;
+        let blob = new Blob([patchedFileBuffer], { type: "application/octet-stream" });
+        let url = URL.createObjectURL(blob);
+        let link = document.createElement('a');
+        link.href = url;
+        
+        let extIndex = selectedFileName.lastIndexOf('.');
+        let outName = extIndex !== -1 ? 
+            selectedFileName.substring(0, extIndex) + "_patched" + selectedFileName.substring(extIndex) : 
+            selectedFileName + "_patched.bin";
+
+        link.download = outName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    function clearAllData() {
+        document.querySelectorAll('textarea').forEach(tx => tx.value = "");
+        for (let i = 1; i <= 3; i++) {
+            localStorage.removeItem(`hex_tim${i}`);
+            localStorage.removeItem(`hex_thay${i}`);
+        }
+        selectedFileBuffer = null;
+        patchedFileBuffer = null;
+        selectedFileName = "";
+        fileInfo.innerText = "Chưa có tệp tin nào được chọn";
+        document.getElementById('downloadFileBtn').disabled = true;
+        printLog('Hệ thống sẵn sàng. Vui lòng kéo thả tệp tin vào ô phía trên, dán các chuỗi mã Hex cần thiết và bấm nút "Thực Thi Patch File"...');
+    }
+</script>
+</body>
+</html>
